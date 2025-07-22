@@ -1,0 +1,380 @@
+<!-- إعلانات Google AdSense المنبثقة المتوافقة مع السياسات -->
+<%
+// إعدادات الإعلانات المنبثقة
+const popupAdsConfig = {
+  enabled: true,
+  publisherId: 'ca-pub-2350758257463070',
+  adSlot: '1234567890',
+  delaySeconds: 10, // تأخير 10 ثوان لتحسين تجربة المستخدم
+  showOncePerSession: true,
+  autoCloseSeconds: 15, // إغلاق تلقائي بعد 15 ثانية
+  respectUserChoice: true
+};
+%>
+
+<% if (popupAdsConfig.enabled) { %>
+<!-- Google AdSense Script -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<%= popupAdsConfig.publisherId %>" 
+        crossorigin="anonymous"></script>
+
+<!-- CSS للإعلان المنبثق -->
+<style>
+  .popup-ad-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(3px);
+  }
+
+  .popup-ad-container {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    max-width: 400px;
+    width: 90%;
+    position: relative;
+    animation: popupSlideIn 0.5s ease-out;
+    border: 2px solid #e9ecef;
+  }
+
+  @keyframes popupSlideIn {
+    from {
+      opacity: 0;
+      transform: scale(0.8) translateY(-50px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .popup-ad-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .popup-ad-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    font-family: 'Cairo', Arial, sans-serif;
+  }
+
+  .popup-ad-close {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-weight: bold;
+  }
+
+  .popup-ad-close:hover {
+    background: #c82333;
+    transform: scale(1.1);
+  }
+
+  .popup-ad-content {
+    text-align: center;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .popup-ad-footer {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #6c757d;
+  }
+
+  .popup-ad-timer {
+    background: #f8f9fa;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+
+  .popup-ad-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* تصميم متجاوب */
+  @media (max-width: 768px) {
+    .popup-ad-container {
+      max-width: 350px;
+      padding: 15px;
+    }
+
+    .popup-ad-title {
+      font-size: 14px;
+    }
+
+    .popup-ad-close {
+      width: 28px;
+      height: 28px;
+      font-size: 16px;
+    }
+  }
+
+  /* إخفاء عند الطباعة */
+  @media print {
+    .popup-ad-overlay {
+      display: none !important;
+    }
+  }
+</style>
+
+<!-- HTML للإعلان المنبثق -->
+<div id="popup-ad-overlay" class="popup-ad-overlay">
+  <div class="popup-ad-container">
+    <div class="popup-ad-header">
+      <h4 class="popup-ad-title">إعلان</h4>
+      <button class="popup-ad-close" onclick="PopupAds.close()" title="إغلاق الإعلان" aria-label="إغلاق الإعلان">
+        ×
+      </button>
+    </div>
+    
+    <div class="popup-ad-content" id="popup-ad-content">
+      <!-- سيتم إدراج الإعلان هنا -->
+    </div>
+    
+    <div class="popup-ad-footer">
+      <span class="popup-ad-label">إعلان من Google</span>
+      <span id="popup-ad-timer" class="popup-ad-timer"></span>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript للإعلان المنبثق -->
+<script>
+window.PopupAds = {
+  config: {
+    enabled: <%= popupAdsConfig.enabled %>,
+    publisherId: '<%= popupAdsConfig.publisherId %>',
+    adSlot: '<%= popupAdsConfig.adSlot %>',
+    delaySeconds: <%= popupAdsConfig.delaySeconds %>,
+    showOncePerSession: <%= popupAdsConfig.showOncePerSession %>,
+    autoCloseSeconds: <%= popupAdsConfig.autoCloseSeconds %>,
+    respectUserChoice: <%= popupAdsConfig.respectUserChoice %>
+  },
+
+  isShown: false,
+  timer: null,
+  countdownTimer: null,
+  remainingSeconds: 0,
+
+  init: function() {
+    if (!this.config.enabled) return;
+
+    // التحقق من عرض الإعلان مرة واحدة فقط في الجلسة
+    if (this.config.showOncePerSession && sessionStorage.getItem('popup-ad-shown')) {
+      return;
+    }
+
+    // التحقق من اختيار المستخدم
+    if (this.config.respectUserChoice && localStorage.getItem('popup-ad-dismissed')) {
+      return;
+    }
+
+    // تأخير عرض الإعلان لتحسين تجربة المستخدم
+    setTimeout(() => {
+      this.show();
+    }, this.config.delaySeconds * 1000);
+  },
+
+  show: function() {
+    if (this.isShown) return;
+
+    const overlay = document.getElementById('popup-ad-overlay');
+    const adContent = document.getElementById('popup-ad-content');
+
+    if (!overlay || !adContent) return;
+
+    // إنشاء الإعلان
+    this.createAd(adContent);
+
+    // عرض النافذة المنبثقة
+    overlay.style.display = 'flex';
+    this.isShown = true;
+
+    // تسجيل عرض الإعلان في الجلسة
+    if (this.config.showOncePerSession) {
+      sessionStorage.setItem('popup-ad-shown', 'true');
+    }
+
+    // بدء العد التنازلي للإغلاق التلقائي
+    if (this.config.autoCloseSeconds > 0) {
+      this.startCountdown();
+    }
+
+    // إضافة مستمعي الأحداث
+    this.addEventListeners();
+
+    // تتبع عرض الإعلان
+    this.trackEvent('popup_ad_shown');
+  },
+
+  close: function() {
+    if (!this.isShown) return;
+
+    const overlay = document.getElementById('popup-ad-overlay');
+    if (overlay) {
+      overlay.style.display = 'none';
+    }
+
+    this.isShown = false;
+
+    // إيقاف المؤقتات
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
+
+    if (this.countdownTimer) {
+      clearInterval(this.countdownTimer);
+      this.countdownTimer = null;
+    }
+
+    // حفظ اختيار المستخدم
+    if (this.config.respectUserChoice) {
+      localStorage.setItem('popup-ad-dismissed', 'true');
+    }
+
+    // تتبع إغلاق الإعلان
+    this.trackEvent('popup_ad_closed');
+  },
+
+  createAd: function(container) {
+    // مسح المحتوى السابق
+    container.innerHTML = '';
+
+    // إنشاء عنصر الإعلان
+    const adElement = document.createElement('ins');
+    adElement.className = 'adsbygoogle';
+    adElement.style.display = 'block';
+    adElement.style.width = '100%';
+    adElement.style.height = '250px';
+    adElement.setAttribute('data-ad-client', this.config.publisherId);
+    adElement.setAttribute('data-ad-slot', this.config.adSlot);
+    adElement.setAttribute('data-ad-format', 'rectangle');
+    adElement.setAttribute('data-full-width-responsive', 'false');
+
+    container.appendChild(adElement);
+
+    // تحميل الإعلان
+    try {
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (e) {
+      console.warn('خطأ في تحميل إعلان AdSense:', e);
+      // عرض رسالة بديلة
+      container.innerHTML = '<div style="padding: 40px; text-align: center; color: #6c757d; font-size: 14px;">جاري تحميل الإعلان...</div>';
+    }
+  },
+
+  startCountdown: function() {
+    this.remainingSeconds = this.config.autoCloseSeconds;
+    const timerElement = document.getElementById('popup-ad-timer');
+
+    if (!timerElement) return;
+
+    const updateTimer = () => {
+      if (this.remainingSeconds > 0) {
+        timerElement.textContent = `إغلاق تلقائي خلال ${this.remainingSeconds}ث`;
+        this.remainingSeconds--;
+      } else {
+        timerElement.textContent = 'جاري الإغلاق...';
+        this.close();
+      }
+    };
+
+    updateTimer();
+    this.countdownTimer = setInterval(updateTimer, 1000);
+
+    // الإغلاق التلقائي
+    this.timer = setTimeout(() => {
+      this.close();
+    }, this.config.autoCloseSeconds * 1000);
+  },
+
+  addEventListeners: function() {
+    const overlay = document.getElementById('popup-ad-overlay');
+    
+    // إغلاق عند النقر على الخلفية
+    if (overlay) {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          this.close();
+        }
+      });
+    }
+
+    // إغلاق عند الضغط على Escape
+    const escapeHandler = (e) => {
+      if (e.key === 'Escape' && this.isShown) {
+        this.close();
+        document.removeEventListener('keydown', escapeHandler);
+      }
+    };
+    document.addEventListener('keydown', escapeHandler);
+  },
+
+  trackEvent: function(eventName) {
+    // تتبع الأحداث باستخدام Google Analytics إذا كان متاحاً
+    if (typeof gtag !== 'undefined') {
+      gtag('event', eventName, {
+        event_category: 'AdSense Popup',
+        event_label: 'Popup Advertisement'
+      });
+    }
+
+    // تتبع مخصص
+    console.log('Popup Ad Event:', eventName);
+  }
+};
+
+// تهيئة الإعلان المنبثق عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', function() {
+  // تأخير إضافي للتأكد من تحميل AdSense
+  setTimeout(() => {
+    PopupAds.init();
+  }, 2000);
+});
+
+// تهيئة عند تغيير الصفحة (للتطبيقات أحادية الصفحة)
+window.addEventListener('popstate', function() {
+  if (PopupAds.isShown) {
+    PopupAds.close();
+  }
+});
+</script>
+<% } %>
+

@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>اختبار المنتدى - الإعلانات المحدثة</title>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Cairo', 'Tajawal', Arial, sans-serif;
+    }
+
+    body {
+      background: #f6f8fa;
+      color: #222;
+      direction: rtl;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    h1 {
+      text-align: center;
+      color: #ff6b35;
+      margin-bottom: 30px;
+    }
+
+    /* قسم الإعلانات */
+    .story-slider {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      background: #FFFFFF;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      overflow-x: auto;
+      margin-bottom: 20px;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .story-item {
+      position: relative;
+      width: 120px;
+      height: 180px;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ff6b35, #f7931e);
+      flex-shrink: 0;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .story-item:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(107, 72, 255, 0.3);
+    }
+
+    .story-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.9;
+      transition: opacity 0.3s ease;
+    }
+
+    .story-item:hover img {
+      opacity: 1;
+    }
+
+    .story-item .avatar {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #FFFFFF;
+      object-fit: cover;
+    }
+
+    .story-item .username {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      color: #FFFFFF;
+      font-size: 0.9rem;
+      font-family: 'Tajawal', sans-serif;
+      font-weight: 700;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    .story-item.add-story {
+      background: #F9F9F9;
+      border: 2px dashed #ff6b35;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 0.5rem;
+      color: #ff6b35;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .story-item.add-story:hover {
+      background: #ff6b35;
+      color: #FFFFFF;
+      border-color: #FFFFFF;
+    }
+
+    .story-item.add-story i {
+      font-size: 1.5rem;
+    }
+
+    .story-item.add-story span {
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    /* أيقونات التعديل والحذف للإعلانات */
+    .story-item .ad-actions {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      z-index: 10;
+    }
+
+    .story-item:hover .ad-actions {
+      display: flex;
+    }
+
+    .story-item .ad-action-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .story-item .edit-ad-btn {
+      background: linear-gradient(135deg, #4CAF50, #45a049);
+      color: white;
+    }
+
+    .story-item .edit-ad-btn:hover {
+      background: linear-gradient(135deg, #45a049, #4CAF50);
+      transform: scale(1.1);
+    }
+
+    .story-item .delete-ad-btn {
+      background: linear-gradient(135deg, #f44336, #d32f2f);
+      color: white;
+    }
+
+    .story-item .delete-ad-btn:hover {
+      background: linear-gradient(135deg, #d32f2f, #f44336);
+      transform: scale(1.1);
+    }
+
+    .story-view {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+
+    .story-view.show {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .story-view .progress-container {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .story-view .progress-bar {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .story-view .progress-bar .progress {
+      height: 100%;
+      background: linear-gradient(90deg, #ff6b35, #f7931e);
+      width: 0%;
+      border-radius: 4px;
+      transition: width 0.1s linear;
+    }
+
+    .story-view .story-content {
+      position: relative;
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .story-view .story-content img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: cover;
+    }
+
+    .story-view .story-content .text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #FFFFFF;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .story-view .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: #FFFFFF;
+      font-size: 1.5rem;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.5);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.3s ease;
+    }
+
+    .story-view .close-btn:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .story-view .nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #FFFFFF;
+      font-size: 2rem;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease;
+    }
+
+    .story-view .nav-btn:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .story-view .nav-btn.prev {
+      left: 20px;
+    }
+
+    .story-view .nav-btn.next {
+      right: 20px;
+    }
+
+    .story-view .ad-text {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      color: #FFFFFF;
+      font-size: 1rem;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 0.75rem;
+      border-radius: 12px;
+    }
+
+    /* أيقونات التعديل والحذف في عرض الإعلان المكبر */
+    .story-view .ad-actions-expanded {
+      position: absolute;
+      top: 70px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 1001;
+    }
+
+    .story-view .ad-action-btn-expanded {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .story-view .edit-ad-btn-expanded {
+      background: linear-gradient(135deg, #4CAF50, #45a049);
+      color: white;
+    }
+
+    .story-view .edit-ad-btn-expanded:hover {
+      background: linear-gradient(135deg, #45a049, #4CAF50);
+      transform: scale(1.1);
+    }
+
+    .story-view .delete-ad-btn-expanded {
+      background: linear-gradient(135deg, #f44336, #d32f2f);
+      color: white;
+    }
+
+    .story-view .delete-ad-btn-expanded:hover {
+      background: linear-gradient(135deg, #d32f2f, #f44336);
+      transform: scale(1.1);
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+
+    .modal.show {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: #FFFFFF;
+      padding: 2rem;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      position: relative;
+      transform: scale(0.95);
+      transition: transform 0.3s ease;
+    }
+
+    .modal.show .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-content .close-modal {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 1.5rem;
+      color: #ff6b35;
+      cursor: pointer;
+      background: none;
+      border: none;
+      transition: color 0.3s ease;
+    }
+
+    .modal-content .close-modal:hover {
+      color: #FF5C5C;
+    }
+
+    .modal-content h3 {
+      font-size: 1.5rem;
+      color: #ff6b35;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .modal-content .file-input {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    .modal-content .file-input input[type="file"] {
+      display: none;
+    }
+
+    .modal-content .file-input label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #ff6b35, #f7931e);
+      color: #FFFFFF;
+      padding: 12px 20px;
+      border-radius: 25px;
+      font-size: 0.9rem;
+      font-family: 'Tajawal', sans-serif;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+      text-align: center;
+    }
+
+    .modal-content .file-input label:hover {
+      background: linear-gradient(135deg, #f7931e, #ff6b35);
+      transform: translateY(-2px);
+    }
+
+    .modal-content input,
+    .modal-content textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      margin: 0.5rem 0 1rem;
+      border: 2px solid #DDD6FE;
+      border-radius: 12px;
+      font-size: 1rem;
+      background: #F9F9F9;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .modal-content input:focus,
+    .modal-content textarea:focus {
+      border-color: #ff6b35;
+      box-shadow: 0 0 8px rgba(107, 72, 255, 0.3);
+      outline: none;
+    }
+
+    .modal-content textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .modal-content button[type="submit"] {
+      width: 100%;
+      padding: 0.75rem;
+      background: linear-gradient(135deg, #ff6b35, #f7931e);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 25px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    .modal-content button[type="submit"]:hover {
+      background: linear-gradient(135deg, #f7931e, #ff6b35);
+      transform: translateY(-2px);
+    }
+
+    /* معاينة الصورة في مودال التعديل */
+    .modal-content .current-image-preview {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .modal-content .current-image-preview img {
+      max-width: 200px;
+      max-height: 200px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-content .current-image-preview p {
+      margin-top: 0.5rem;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    /* تحسين عرض أيقونات الإعلانات في الجوال */
+    @media screen and (max-width: 768px) {
+      .story-item .ad-actions {
+        display: flex;
+        opacity: 0.8;
+      }
+      
+      .story-view .ad-actions-expanded {
+        top: 60px;
+        right: 10px;
+      }
+      
+      .story-view .ad-action-btn-expanded {
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>اختبار ميزات الإعلانات المحدثة</h1>
+    
+    <!-- قسم الإعلانات -->
+    <div class="story-slider" id="storySlider">
+      <div class="story-item add-story" id="addStory">
+        <i class="fas fa-plus"></i>
+        <span>اعلن عن نفسك</span>
+      </div>
+      
+      <!-- إعلان تجريبي 1 -->
+      <div class="story-item" data-id="1" data-title="مطور ويب محترف" data-description="أقدم خدمات تطوير المواقع الإلكترونية بأحدث التقنيات" data-image="https://via.placeholder.com/120x180/ff6b35/ffffff?text=Ad1" data-user-id="123">
+        <img src="https://via.placeholder.com/120x180/ff6b35/ffffff?text=Ad1" alt="مطور ويب محترف" loading="lazy">
+        <img src="https://via.placeholder.com/40x40/4CAF50/ffffff?text=U1" class="avatar" alt="أحمد محمد" loading="lazy">
+        <span class="username">أحمد محمد</span>
+        
+        <!-- أيقونات التعديل والحذف (تظهر فقط لصاحب الإعلان) -->
+        <div class="ad-actions">
+          <button class="ad-action-btn edit-ad-btn" data-ad-id="1" title="تعديل الإعلان">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="ad-action-btn delete-ad-btn" data-ad-id="1" title="حذف الإعلان">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- إعلان تجريبي 2 -->
+      <div class="story-item" data-id="2" data-title="مصمم جرافيك" data-description="تصميم شعارات وهويات بصرية احترافية" data-image="https://via.placeholder.com/120x180/f7931e/ffffff?text=Ad2" data-user-id="456">
+        <img src="https://via.placeholder.com/120x180/f7931e/ffffff?text=Ad2" alt="مصمم جرافيك" loading="lazy">
+        <img src="https://via.placeholder.com/40x40/2196F3/ffffff?text=U2" class="avatar" alt="فاطمة علي" loading="lazy">
+        <span class="username">فاطمة علي</span>
+        
+        <!-- أيقونات التعديل والحذف (لا تظهر لأن المستخدم ليس صاحب الإعلان) -->
+      </div>
+      
+      <!-- إعلان تجريبي 3 -->
+      <div class="story-item" data-id="3" data-title="كاتب محتوى" data-description="كتابة محتوى إبداعي وتسويقي متميز" data-image="https://via.placeholder.com/120x180/9C27B0/ffffff?text=Ad3" data-user-id="123">
+        <img src="https://via.placeholder.com/120x180/9C27B0/ffffff?text=Ad3" alt="كاتب محتوى" loading="lazy">
+        <img src="https://via.placeholder.com/40x40/4CAF50/ffffff?text=U1" class="avatar" alt="أحمد محمد" loading="lazy">
+        <span class="username">أحمد محمد</span>
+        
+        <!-- أيقونات التعديل والحذف (تظهر لصاحب الإعلان) -->
+        <div class="ad-actions">
+          <button class="ad-action-btn edit-ad-btn" data-ad-id="3" title="تعديل الإعلان">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="ad-action-btn delete-ad-btn" data-ad-id="3" title="حذف الإعلان">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="story-view" id="storyView">
+      <div class="progress-container" id="progressContainer"></div>
+      <div class="story-content">
+        <img id="storyImage" src="" alt="الإعلان" loading="lazy">
+        <div id="storyText" class="text"></div>
+        <div id="adText" class="ad-text"></div>
+      </div>
+      <div class="close-btn" id="closeBtn">✕</div>
+      <div class="nav-btn prev" id="prevBtn">‹</div>
+      <div class="nav-btn next" id="nextBtn">›</div>
+      
+      <!-- أيقونات التعديل والحذف في العرض المكبر -->
+      <div class="ad-actions-expanded" id="adActionsExpanded" style="display: none;">
+        <button class="ad-action-btn-expanded edit-ad-btn-expanded" id="editAdBtnExpanded" title="تعديل الإعلان">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="ad-action-btn-expanded delete-ad-btn-expanded" id="deleteAdBtnExpanded" title="حذف الإعلان">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- مودال إضافة إعلان -->
+    <div class="modal" id="addStoryModal">
+      <div class="modal-content">
+        <button class="close-modal" id="closeModalBtn">✕</button>
+        <h3>إضافة إعلان</h3>
+        <form id="addAdForm" enctype="multipart/form-data">
+          <div class="file-input">
+            <input type="file" id="storyImageInput" name="image" accept="image/*">
+            <label for="storyImageInput"><i class="fas fa-cloud-upload-alt"></i> اختر صورة</label>
+          </div>
+          <input type="text" id="storyTitle" name="title" placeholder="عنوان الإعلان" required>
+          <textarea id="storyDescription" name="description" placeholder="وصف الإعلان"></textarea>
+          <button type="submit" id="submitStory">إضافة</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- مودال تعديل إعلان -->
+    <div class="modal" id="editAdModal">
+      <div class="modal-content">
+        <button class="close-modal" id="closeEditModalBtn">✕</button>
+        <h3>تعديل الإعلان</h3>
+        <form id="editAdForm" enctype="multipart/form-data">
+          <div class="current-image-preview" id="currentImagePreview">
+            <img id="currentAdImage" src="" alt="الصورة الحالية">
+            <p>الصورة الحالية</p>
+          </div>
+          <div class="file-input">
+            <input type="file" id="editImageInput" name="image" accept="image/*">
+            <label for="editImageInput"><i class="fas fa-cloud-upload-alt"></i> تغيير الصورة (اختياري)</label>
+          </div>
+          <input type="text" id="editTitle" name="title" placeholder="عنوان الإعلان" required>
+          <textarea id="editDescription" name="description" placeholder="وصف الإعلان"></textarea>
+          <input type="hidden" id="editAdId" name="adId">
+          <button type="submit" id="submitEditAd">حفظ التعديلات</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // محاكاة معرف المستخدم الحالي (في التطبيق الحقيقي سيأتي من الخادم)
+    const currentUserId = "123";
+
+    // إدارة الإعلانات - JavaScript
+    document.addEventListener("DOMContentLoaded", function() {
+      // المتغيرات العامة
+      const addStoryBtn = document.getElementById('addStory');
+      const addStoryModal = document.getElementById('addStoryModal');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      const editAdModal = document.getElementById('editAdModal');
+      const closeEditModalBtn = document.getElementById('closeEditModalBtn');
+      const storySlider = document.getElementById('storySlider');
+      const storyView = document.getElementById('storyView');
+      const storyImage = document.getElementById('storyImage');
+      const storyText = document.getElementById('storyText');
+      const adText = document.getElementById('adText');
+      const closeBtn = document.getElementById('closeBtn');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const progressContainer = document.getElementById('progressContainer');
+      const adActionsExpanded = document.getElementById('adActionsExpanded');
+      const editAdBtnExpanded = document.getElementById('editAdBtnExpanded');
+      const deleteAdBtnExpanded = document.getElementById('deleteAdBtnExpanded');
+      const addAdForm = document.getElementById('addAdForm');
+      const editAdForm = document.getElementById('editAdForm');
+
+      let currentStoryIndex = 0;
+      let stories = Array.from(document.querySelectorAll('.story-item:not(.add-story)'));
+      let intervalId;
+      let currentAdId = null;
+
+      // فتح مودال إضافة إعلان
+      if (addStoryBtn) {
+        addStoryBtn.addEventListener('click', () => {
+          addStoryModal.classList.add('show');
+        });
+      }
+
+      // إغلاق مودال إضافة إعلان
+      if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', () => {
+          addStoryModal.classList.remove('show');
+          if (addAdForm) addAdForm.reset();
+        });
+      }
+
+      // إغلاق مودال تعديل إعلان
+      if (closeEditModalBtn) {
+        closeEditModalBtn.addEventListener('click', () => {
+          editAdModal.classList.remove('show');
+          if (editAdForm) editAdForm.reset();
+        });
+      }
+
+      // النقر على الإعلانات لعرضها
+      if (storySlider) {
+        storySlider.addEventListener('click', (e) => {
+          const storyItem = e.target.closest('.story-item:not(.add-story)');
+          if (storyItem && !e.target.closest('.ad-actions')) {
+            currentStoryIndex = stories.indexOf(storyItem);
+            showStory();
+          }
+        });
+      }
+
+      // إغلاق عرض الإعلان المكبر
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          hideStory();
+        });
+      }
+
+      // التنقل بين الإعلانات
+      if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+          currentStoryIndex = Math.max(0, currentStoryIndex - 1);
+          showStory();
+        });
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+          currentStoryIndex = Math.min(stories.length - 1, currentStoryIndex + 1);
+          showStory();
+        });
+      }
+
+      // عرض الإعلان
+      function showStory() {
+        if (stories.length === 0) return;
+        const story = stories[currentStoryIndex];
+        currentAdId = story.dataset.id;
+        const adUserId = story.dataset.userId;
+        
+        storyImage.src = story.dataset.image || '';
+        storyText.textContent = story.dataset.title || '';
+        adText.textContent = story.dataset.description || '';
+        storyView.classList.add('show');
+        
+        // إظهار أيقونات التعديل والحذف إذا كان المستخدم هو صاحب الإعلان
+        if (currentUserId && adUserId === currentUserId) {
+          adActionsExpanded.style.display = 'flex';
+        } else {
+          adActionsExpanded.style.display = 'none';
+        }
+        
+        updateProgressBars();
+        startProgress();
+      }
+
+      // إخفاء عرض الإعلان
+      function hideStory() {
+        storyView.classList.remove('show');
+        clearInterval(intervalId);
+        progressContainer.innerHTML = '';
+        adActionsExpanded.style.display = 'none';
+        currentAdId = null;
+      }
+
+      // تحديث شريط التقدم
+      function updateProgressBars() {
+        progressContainer.innerHTML = '';
+        stories.forEach((_, index) => {
+          const bar = document.createElement('div');
+          bar.classList.add('progress-bar');
+          const progress = document.createElement('div');
+          progress.classList.add('progress');
+          if (index === currentStoryIndex) {
+            progress.style.width = '0%';
+          } else if (index < currentStoryIndex) {
+            progress.style.width = '100%';
+          }
+          bar.appendChild(progress);
+          progressContainer.appendChild(bar);
+        });
+      }
+
+      // بدء شريط التقدم
+      function startProgress() {
+        clearInterval(intervalId);
+        const progressBars = document.querySelectorAll('.progress-bar .progress');
+        const currentProgress = progressBars[currentStoryIndex];
+        let width = 0;
+        intervalId = setInterval(() => {
+          width += 1;
+          currentProgress.style.width = `${width}%`;
+          if (width >= 100) {
+            clearInterval(intervalId);
+            currentStoryIndex = Math.min(stories.length - 1, currentStoryIndex + 1);
+            if (currentStoryIndex < stories.length) {
+              showStory();
+            } else {
+              hideStory();
+            }
+          }
+        }, 50);
+      }
+
+      // معالجة أزرار التعديل والحذف في الإعلانات الصغيرة
+      document.addEventListener('click', async function(e) {
+        if (e.target.closest('.edit-ad-btn')) {
+          e.stopPropagation();
+          const adId = e.target.closest('.edit-ad-btn').dataset.adId;
+          await openEditAdModal(adId);
+        }
+        
+        if (e.target.closest('.delete-ad-btn')) {
+          e.stopPropagation();
+          const adId = e.target.closest('.delete-ad-btn').dataset.adId;
+          await deleteAd(adId);
+        }
+      });
+
+      // معالجة أزرار التعديل والحذف في العرض المكبر
+      if (editAdBtnExpanded) {
+        editAdBtnExpanded.addEventListener('click', async () => {
+          if (currentAdId) {
+            await openEditAdModal(currentAdId);
+          }
+        });
+      }
+
+      if (deleteAdBtnExpanded) {
+        deleteAdBtnExpanded.addEventListener('click', async () => {
+          if (currentAdId) {
+            await deleteAd(currentAdId);
+          }
+        });
+      }
+
+      // فتح مودال تعديل الإعلان (محاكاة)
+      async function openEditAdModal(adId) {
+        try {
+          // محاكاة البيانات
+          const mockData = {
+            "1": { id: "1", title: "مطور ويب محترف", description: "أقدم خدمات تطوير المواقع الإلكترونية بأحدث التقنيات", image: "https://via.placeholder.com/120x180/ff6b35/ffffff?text=Ad1" },
+            "3": { id: "3", title: "كاتب محتوى", description: "كتابة محتوى إبداعي وتسويقي متميز", image: "https://via.placeholder.com/120x180/9C27B0/ffffff?text=Ad3" }
+          };
+          
+          const ad = mockData[adId];
+          if (ad) {
+            document.getElementById('editAdId').value = ad.id;
+            document.getElementById('editTitle').value = ad.title;
+            document.getElementById('editDescription').value = ad.description;
+            
+            // عرض الصورة الحالية
+            const currentImage = document.getElementById('currentAdImage');
+            const imagePreview = document.getElementById('currentImagePreview');
+            if (ad.image) {
+              currentImage.src = ad.image;
+              imagePreview.style.display = 'block';
+            } else {
+              imagePreview.style.display = 'none';
+            }
+            
+            editAdModal.classList.add('show');
+          } else {
+            showAlert('error', 'خطأ', 'لم يتم العثور على الإعلان');
+          }
+        } catch (error) {
+          showAlert('error', 'خطأ', 'حدث خطأ في تحميل بيانات الإعلان');
+        }
+      }
+
+      // حذف الإعلان (محاكاة)
+      async function deleteAd(adId) {
+        const result = await Swal.fire({
+          title: 'تأكيد الحذف',
+          text: 'هل أنت متأكد من حذف هذا الإعلان؟',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'نعم، احذف',
+          cancelButtonText: 'إلغاء'
+        });
+
+        if (result.isConfirmed) {
+          try {
+            // محاكاة حذف الإعلان
+            showAlert('success', 'تم الحذف', 'تم حذف الإعلان بنجاح');
+            
+            // إزالة الإعلان من الواجهة
+            const adElement = document.querySelector(`[data-id="${adId}"]`);
+            if (adElement) {
+              adElement.remove();
+              stories = Array.from(document.querySelectorAll('.story-item:not(.add-story)'));
+            }
+          } catch (error) {
+            showAlert('error', 'خطأ', 'حدث خطأ في حذف الإعلان');
+          }
+        }
+      }
+
+      // إضافة إعلان جديد (محاكاة)
+      if (addAdForm) {
+        addAdForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const formData = new FormData(addAdForm);
+          const title = formData.get('title');
+          const description = formData.get('description');
+          
+          if (title) {
+            showAlert('success', 'تم الإضافة', 'تم إضافة الإعلان بنجاح');
+            addStoryModal.classList.remove('show');
+            addAdForm.reset();
+          } else {
+            showAlert('error', 'خطأ', 'العنوان مطلوب');
+          }
+        });
+      }
+
+      // تعديل إعلان (محاكاة)
+      if (editAdForm) {
+        editAdForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const formData = new FormData(editAdForm);
+          const title = formData.get('title');
+          const adId = document.getElementById('editAdId').value;
+          
+          if (title) {
+            showAlert('success', 'تم التحديث', 'تم تحديث الإعلان بنجاح');
+            editAdModal.classList.remove('show');
+            editAdForm.reset();
+          } else {
+            showAlert('error', 'خطأ', 'العنوان مطلوب');
+          }
+        });
+      }
+
+      // دالة عرض التنبيهات
+      function showAlert(type, title, text) {
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({
+            icon: type,
+            title: title,
+            text: text,
+            timer: type === 'success' ? 2000 : undefined,
+            showConfirmButton: type !== 'success'
+          });
+        } else {
+          alert(`${title}: ${text}`);
+        }
+      }
+
+      // إغلاق المودال عند النقر خارجه
+      window.addEventListener('click', function(e) {
+        if (e.target === addStoryModal) {
+          addStoryModal.classList.remove('show');
+          if (addAdForm) addAdForm.reset();
+        }
+        if (e.target === editAdModal) {
+          editAdModal.classList.remove('show');
+          if (editAdForm) editAdForm.reset();
+        }
+      });
+
+      // إغلاق عرض الإعلان عند الضغط على Escape
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          if (storyView.classList.contains('show')) {
+            hideStory();
+          }
+          if (addStoryModal.classList.contains('show')) {
+            addStoryModal.classList.remove('show');
+            if (addAdForm) addAdForm.reset();
+          }
+          if (editAdModal.classList.contains('show')) {
+            editAdModal.classList.remove('show');
+            if (editAdForm) editAdForm.reset();
+          }
+        }
+      });
+
+      // تحديث قائمة الإعلانات عند إضافة أو تعديل إعلان
+      function updateStoriesList() {
+        stories = Array.from(document.querySelectorAll('.story-item:not(.add-story)'));
+      }
+
+      // استدعاء تحديث القائمة عند تحميل الصفحة
+      updateStoriesList();
+    });
+  </script>
+</body>
+</html>
+

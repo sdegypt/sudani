@@ -1,0 +1,98 @@
+        <!-- قسم الإعلانات -->
+        <div class="story-slider" id="storySlider">
+          <div class="story-item add-story" id="addStory">
+            <i class="fas fa-plus"></i>
+            <span>اعلن عن نفسك</span>
+          </div>
+          <% if (ads && ads.length > 0) { %>
+            <% ads.forEach(ad => { %>
+              <div class="story-item" data-id="<%= ad.id %>" data-title="<%= ad.title %>" data-description="<%= ad.description %>" data-image="<%= getCloudinaryImageUrl(ad.image, '/uploads/images/pngwing.com.png') %>" data-user-id="<%= ad.user_id %>">
+                <% if (ad.image) { %>
+                  <img src="<%= getCloudinaryImageUrl(ad.image, '/uploads/images/pngwing.com.png') %>" alt="<%= ad.title %>" loading="lazy">
+                <% } %>
+                <img
+                  src="<%= getCloudinaryImageUrl(ad.user_avatar, '/uploads/images/pngwing.com.png') %>"
+                  class="avatar"
+                  alt="<%= ad.user_name || 'User' %>"
+                  onerror="this.src='/uploads/images/pngwing.com.png'"
+                  loading="lazy"
+                >
+                <span class="username"><%= ad.user_name %></span>
+                
+                <!-- أيقونات التعديل والحذف (تظهر فقط لصاحب الإعلان) -->
+                <% if (currentUserId && ad.user_id == currentUserId) { %>
+                  <div class="ad-actions">
+                    <button class="ad-action-btn edit-ad-btn" data-ad-id="<%= ad.id %>" title="تعديل الإعلان">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="ad-action-btn delete-ad-btn" data-ad-id="<%= ad.id %>" title="حذف الإعلان">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                <% } %>
+              </div>
+            <% }); %>
+          <% } %>
+        </div>
+  
+        <div class="story-view" id="storyView">
+          <div class="progress-container" id="progressContainer"></div>
+          <div class="story-content">
+            <img id="storyImage" src="" alt="الإعلان" loading="lazy">
+            <div id="storyText" class="text"></div>
+            <div id="adText" class="ad-text"></div>
+          </div>
+          <div class="close-btn" id="closeBtn">✕</div>
+          <div class="nav-btn prev" id="prevBtn">‹</div>
+          <div class="nav-btn next" id="nextBtn">›</div>
+          
+          <!-- أيقونات التعديل والحذف في العرض المكبر -->
+          <div class="ad-actions-expanded" id="adActionsExpanded" style="display: none;">
+            <button class="ad-action-btn-expanded edit-ad-btn-expanded" id="editAdBtnExpanded" title="تعديل الإعلان">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="ad-action-btn-expanded delete-ad-btn-expanded" id="deleteAdBtnExpanded" title="حذف الإعلان">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+  
+        <!-- مودال إضافة إعلان -->
+        <div class="modal" id="addStoryModal">
+          <div class="modal-content">
+            <button class="close-modal" id="closeModalBtn">✕</button>
+            <h3>إضافة إعلان</h3>
+            <form id="addAdForm" enctype="multipart/form-data">
+              <div class="file-input">
+                <input type="file" id="storyImageInput" name="image" accept="image/*">
+                <label for="storyImageInput"><i class="fas fa-cloud-upload-alt"></i> اختر صورة</label>
+              </div>
+              <input type="text" id="storyTitle" name="title" placeholder="عنوان الإعلان" required>
+              <textarea id="storyDescription" name="description" placeholder="وصف الإعلان"></textarea>
+              <button type="submit" id="submitStory">إضافة</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- مودال تعديل إعلان -->
+        <div class="modal" id="editAdModal">
+          <div class="modal-content">
+            <button class="close-modal" id="closeEditModalBtn">✕</button>
+            <h3>تعديل الإعلان</h3>
+            <form id="editAdForm" enctype="multipart/form-data">
+              <div class="current-image-preview" id="currentImagePreview">
+                <img id="currentAdImage" src="" alt="الصورة الحالية">
+                <p>الصورة الحالية</p>
+              </div>
+              <div class="file-input">
+                <input type="file" id="editImageInput" name="image" accept="image/*">
+                <label for="editImageInput"><i class="fas fa-cloud-upload-alt"></i> تغيير الصورة (اختياري)</label>
+              </div>
+              <input type="text" id="editTitle" name="title" placeholder="عنوان الإعلان" required>
+              <textarea id="editDescription" name="description" placeholder="وصف الإعلان"></textarea>
+              <input type="hidden" id="editAdId" name="adId">
+              <button type="submit" id="submitEditAd">حفظ التعديلات</button>
+            </form>
+          </div>
+        </div>
+

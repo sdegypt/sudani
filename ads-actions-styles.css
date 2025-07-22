@@ -1,0 +1,133 @@
+/* أيقونات التعديل والحذف للإعلانات */
+.story-item .ad-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 10;
+}
+
+.story-item:hover .ad-actions {
+  display: flex;
+}
+
+.story-item .ad-action-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.story-item .edit-ad-btn {
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: white;
+}
+
+.story-item .edit-ad-btn:hover {
+  background: linear-gradient(135deg, #45a049, #4CAF50);
+  transform: scale(1.1);
+}
+
+.story-item .delete-ad-btn {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+  color: white;
+}
+
+.story-item .delete-ad-btn:hover {
+  background: linear-gradient(135deg, #d32f2f, #f44336);
+  transform: scale(1.1);
+}
+
+/* أيقونات التعديل والحذف في عرض الإعلان المكبر */
+.story-view .ad-actions-expanded {
+  position: absolute;
+  top: 70px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1001;
+}
+
+.story-view .ad-action-btn-expanded {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.story-view .edit-ad-btn-expanded {
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: white;
+}
+
+.story-view .edit-ad-btn-expanded:hover {
+  background: linear-gradient(135deg, #45a049, #4CAF50);
+  transform: scale(1.1);
+}
+
+.story-view .delete-ad-btn-expanded {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+  color: white;
+}
+
+.story-view .delete-ad-btn-expanded:hover {
+  background: linear-gradient(135deg, #d32f2f, #f44336);
+  transform: scale(1.1);
+}
+
+/* معاينة الصورة في مودال التعديل */
+.modal-content .current-image-preview {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.modal-content .current-image-preview img {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content .current-image-preview p {
+  margin-top: 0.5rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* تحسين عرض أيقونات الإعلانات في الجوال */
+@media screen and (max-width: 768px) {
+  .story-item .ad-actions {
+    display: flex;
+    opacity: 0.8;
+  }
+  
+  .story-view .ad-actions-expanded {
+    top: 60px;
+    right: 10px;
+  }
+  
+  .story-view .ad-action-btn-expanded {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+}
+
