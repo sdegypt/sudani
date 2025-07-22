@@ -474,5 +474,3 @@ server.listen(PORT, () => {
   console.log(`🔍 Health Check: http://localhost:${PORT}/health`);
   console.log(`📊 Uptime Monitor: http://localhost:${PORT}/uptime`);
 });
-
-
