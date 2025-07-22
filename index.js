@@ -57,10 +57,12 @@ const server = http.createServer(app);
 const imageOptimizer = new ImageOptimizationMiddleware();
 
 // Middleware لإعادة التوجيه 301 إلى https://www.amlhabrak.online
+// Middleware لإعادة التوجيه 301 إلى https://www.amlhabrak.online
+/*
 app.use((req, res, next) => {
-  const host = req.get('host');
-  const protocol = req.get('x-forwarded-proto') || req.protocol;
-  const targetDomain = 'www.amlhabrak.online';
+  const host = req.get(\'host\');
+  const protocol = req.get(\'x-forwarded-proto\') || req.protocol;
+  const targetDomain = \'www.amlhabrak.online\';
   
   // التحقق من أن الطلب ليس من النطاق المطلوب
   if (host !== targetDomain) {
@@ -69,13 +71,14 @@ app.use((req, res, next) => {
   }
   
   // التحقق من أن الطلب يستخدم HTTPS
-  if (protocol !== 'https' && process.env.NODE_ENV === 'production') {
+  if (protocol !== \'https\' && process.env.NODE_ENV === \'production\') {
     const redirectUrl = `https://${host}${req.originalUrl}`;
     return res.redirect(301, redirectUrl);
   }
   
   next();
 });
+*/
 
 // تفعيل الضغط مع إعدادات محسنة
 app.use(compression({
