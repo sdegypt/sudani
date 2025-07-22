@@ -6,17 +6,10 @@
       "use": "@vercel/node"
     }
   ],
-  "redirects": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "has": [
-        {
-          "type": "host",
-          "value": "amlhabrak.online"
-        }
-      ],
-      "destination": "https://www.amlhabrak.online/$1",
-      "permanent": true
+      "src": "/(.*)",
+      "dest": "/index.js"
     }
   ],
   "env": {
